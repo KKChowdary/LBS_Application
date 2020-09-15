@@ -1,12 +1,12 @@
-DNA interface application
+DNA Spaces Interface Application
 -------------------------
 This sample application uses Cisco DNA Spaces Firehose API events such as entry, exit, location information change,Device RSSI update and associated profile, builds data pipeline using http requests to host in public cloud and private cloud.
 
-WebEx teams interface application
+WebEx-Teams Interface Application
 ---------------------------------
 The sample application uses the WebEx REST API to Create the users, create the teams, post the messages in rooms and sends the WebEx invitation. 
 
-Meraki camera interface application
+Meraki Camera Interface Application
 ----------------------------------
 The sample application accesses the RTSP streaming from meraki camera and applies video analytics to meet business requirements.
 
