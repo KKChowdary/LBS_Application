@@ -30,3 +30,7 @@ This script was develeoped using python version 3.7.3
 Meraki Camera Requirements
 Firmware version 4.2 or newer 2nd generation MV camera For further details: https://documentation.meraki.com/MV/Advanced_Configuration/External_RTSP
 
+
+
+
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/KKChowdary/LBS_Application)
