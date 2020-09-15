@@ -17,7 +17,8 @@ update the Dnas production token from your DNAS account.
 
 Webex 
 
-This is a monorepo containing all officially maintained Cisco Webex JS SDK modules in the same repo. webex is a collection of node modules targeting our external APIs.
+This is a monorepo containing all officially maintained Cisco Webex JS SDK modules in the same repo. webex is a collection of node modules targeting webex Rest APIs.
+
 
 Clone the Repository and follow below instructions to run the application.
 
