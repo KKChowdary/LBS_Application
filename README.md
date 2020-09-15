@@ -1,34 +1,20 @@
-DNAS Firehouse API 
+DNA interface application
 
-This sample application uses Cisco DNA Spaces Firehose API events such as entry, exit, current location and associated profile, builds data pipeline using  http requests to host in public cloud and private cloud.
+This sample application uses Cisco DNA Spaces Firehose API events such as entry, exit, location information change,Device RSSI update and associated profile, builds data pipeline using http requests to host in public cloud and private cloud.
 
+WebEx teams interface application
 
-Clone the Repository and follow below instructions to run the application.
+The sample application uses the WebEx REST API to Create the users, create the teams, post the messages in rooms and sends the WebEx invitation. 
 
-Extract the  the LBS_Application\Cisco DNAS
-Import in Java Ide .
-update the Dnas production token from your DNAS account.
+Meraki camera interface application
 
-
-Webex 
-
-
-Clone the Repository and follow below instructions to run the application.
-
-Extract the  the LBS_Application\webex 
-Import in Java Ide .
-update the barrer token from your webex account.
-
-Meraki camera
-
-This document provides a step by step guide to integrating the RTSP output from a Meraki MV camera.
-
+The sample application to access the RTSP streaming from meraki camera.
 Dependencies
-Python
-This script was develeoped using python version 3.7.3  
-
+Python.
+This script was developed using python version 3.7.3.  
 Meraki Camera Requirements
-Firmware version 4.2 or newer 2nd generation MV camera For further details: https://documentation.meraki.com/MV/Advanced_Configuration/External_RTSP
+Firmware version 4.2 or newer 2nd generation MV camera for further details: https://documentation.meraki.com/MV/Advanced_Configuration/External_RTSP
+
 
 
 
