@@ -18,6 +18,10 @@ This script was developed using python version 3.7.3.
 Meraki Camera Requirements
 Firmware version 4.2 or newer 2nd generation MV camera for further details: https://documentation.meraki.com/MV/Advanced_Configuration/External_RTSP
 
+CUCM Interface Application
+---------------------------
+The sample application to make the calls for registered endpoints /users using JTAPI API 
+
 
 
 
