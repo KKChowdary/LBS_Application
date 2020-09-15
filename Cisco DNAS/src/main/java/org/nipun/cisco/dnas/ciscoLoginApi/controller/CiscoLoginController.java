@@ -192,7 +192,7 @@ public class CiscoLoginController {
     public ModelAndView oauthLogin(final HttpServletResponse httpServletResponce, final HttpServletRequest request,
             @ModelAttribute("loginTo") final LoginTo loginTo, final Model model, final BindingResult result) throws ParseException {
 
-        /* loginValidator.validate(loginTo, result);*/
+        //Validating the client credentials with local server data.
         if (result.hasErrors()) {
             model.addAttribute("loginTo", loginTo);
             return new ModelAndView("login/thirdPartyLogin");

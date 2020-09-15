@@ -51,9 +51,7 @@ public class CiscoDnaPluginListener {
     @ResponseBody
     @RequestMapping(value = "/executionStart", method = RequestMethod.GET)
     public static String ciscoDnasPluginListener() {
-
         logger.debug("Started the execution of ciscoDnasPluginListener method.");
-
         logger.debug("Executing the code, if firehose auth credentials exists logic.");
         final Properties config = ConfigUtil.getConfig();
         final Integer retryCutoff = Integer.parseInt(config.getProperty("api.retrylimit.cutoff"));
@@ -79,9 +77,6 @@ public class CiscoDnaPluginListener {
 
             logger.debug("Creating instance for FireHoseAPIClient class.");
 
-            // FireHoseAPIClient client = new
-            // FireHoseAPIClient(config.getProperty("api.url"),
-            // config.getProperty("api.key"));
             // consumer to handle the event json objects from API
             JsonEventConsumer consumer = new JsonEventConsumer();
             consumer.setLastSuccessTimeStamp(fromTimeStamp);

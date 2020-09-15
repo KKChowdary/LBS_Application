@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 /**
- * The {@code CraetingUserWebEx} class represents adding users to room i.e .adding users to WebEx room which is created and saving
+ * The {@code CraetingUserWebEx} class represents adding users to room i.e .adding users to WebEx room which is created and saving.
  *
  * @see java.lang.Object#toString()
  * @author manideep.s
