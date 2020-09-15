@@ -28,8 +28,10 @@ public class CiscoDnaPluginListener {
     private static Logger logger = Logger.getLogger(CiscoDnaPluginListener.class);
 
     static String API_URL = "https://partners.dnaspaces.io";
+    // use test example we have to connect to your local server
 
-    static String API_KEY = "636626C56E7F40B58BAE55DE7F4E1FC2";
+    // use  authorized api key
+    static String API_KEY = "";
 
     /*  @Autowired
     static CiscoDnasPluginService ciscoDnasPluginService;*/
@@ -65,8 +67,8 @@ public class CiscoDnaPluginListener {
         logger.debug("Active tenantIds of the cisco fireHose retrived from  database.");
 
         Map<String, Long> activeTenantsMap = new HashMap<String, Long>();
-        activeTenantsMap.put("3F864EBD8C404682B731E7E7DFCBFC40", 1l);
-        activeTenantsMap.put("9GYRXUHL5DTSENWHDLMOJ1Q7X7TACBEO", 8l);
+        //used authorized active tenant id, to test the service
+        activeTenantsMap.put("asdfgfgfgfhfhfhghgfhghghfghghggh", 1l);
 
         logger.debug("Active tenantIds of the cisco fireHose:" + activeTenantsMap.size());
         if (activeTenantsMap.size() > 0) {

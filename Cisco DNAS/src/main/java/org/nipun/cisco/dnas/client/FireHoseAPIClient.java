@@ -29,6 +29,13 @@ import org.nipun.cisco.dnas.exceptions.FireHoseAPIException;
 import org.nipun.cisco.dnas.service.CiscoDnasPluginService;
 import org.nipun.cisco.dnas.utils.ConfigUtil;
 
+/**
+ * The {@code FireHoseAPIClient} class represents for listen the CiscoFireHose data and send to CiscoDnaService.
+ *
+ * @see java.lang.Object#toString()
+ * @author himabindu.v
+ *
+ */
 public class FireHoseAPIClient implements Closeable {
 
     private static final Logger log = LogManager.getLogger(FireHoseAPIClient.class);
@@ -102,6 +109,12 @@ public class FireHoseAPIClient implements Closeable {
         this.fromTimeStampAdvanceWindow = fromTimeStampAdvanceWindow;
     }
 
+    /**
+     * @param activeTenantsMap
+     * @param apiUrl
+     * @param apiKey
+     * @throws FireHoseAPIException
+     */
     public void startConsumeEvents(final Map<String, Long> activeTenantsMap, final String apiUrl, final String apiKey)
             throws FireHoseAPIException {
         log.debug("Started executing the FireHouse startConsumeEvents method.");
@@ -131,6 +144,8 @@ public class FireHoseAPIClient implements Closeable {
             producer = new KafkaProducer(options);
         }
         try {
+            //log.debug("API_URL: " + API_URL);
+            System.out.println("API_URL: " + API_URL);
             request = getRequest(API_URL);
             //log.debug("Executing GET request over http client. URL :: " + request.getURI().toString());
             log.info("Executing GET request over http client. URL :: " + request.getURI().toString());
@@ -162,6 +177,8 @@ public class FireHoseAPIClient implements Closeable {
             while ((line = rd.readLine()) != null) {
                 JSONObject eventData = new JSONObject(line);
                 log.debug("[0]:Received 1st packet");
+
+                //here send the evendata, active tenant maps, apiUrl and apiKey are the arguments
                 consumer.accept(eventData, activeTenantsMap, apiUrl, apiKey);
                 log.debug("[2]: Succesfully received the packet.");
                 if (isKafkaEnabled && producer != null) {

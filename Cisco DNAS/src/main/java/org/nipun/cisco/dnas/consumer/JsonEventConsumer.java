@@ -21,14 +21,12 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.nipun.cisco.dnas.service.CiscoDnasPluginService;
 
 public class JsonEventConsumer {
 
     private static final Logger log = LogManager.getLogger(JsonEventConsumer.class);
     private long lastSuccessTimeStamp = -1;
     private RedisFeeder redisFeeder;
-    private CiscoDnasPluginService dnasCiscoPluginService;
 
     public void accept(final JSONObject eventData, final Map<String, Long> activeTenantsMap, final String apiUrl, final String apiKey) {
         log.debug("Receving fist packet at consumer accept method.");
@@ -37,8 +35,8 @@ public class JsonEventConsumer {
             redisFeeder = new RedisFeeder();
         }
         String eventType = eventData.getString("eventType");
-        log.debug("eventType : " + eventType);
-        log.debug(eventData.toString());
+        //log.debug("eventType : " + eventType);
+        //log.debug(eventData.toString());
         redisFeeder.accept(eventData, activeTenantsMap, apiUrl, apiKey);
 
         log.debug("[1]: Succesfully received the packet.");

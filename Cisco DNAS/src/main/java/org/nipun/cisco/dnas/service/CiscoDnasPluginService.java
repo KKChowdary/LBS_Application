@@ -3,10 +3,9 @@
  */
 package org.nipun.cisco.dnas.service;
 
-import java.io.*;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -24,7 +23,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.nipun.cisco.dnas.common.util.Constants;
 import org.nipun.cisco.dnas.common.util.DateUtil;
 import org.nipun.cisco.dnas.events.enums.EventTypes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 /**
+ * The {@code CiscoDnasPluginService} class represents for processing CiscoFireHose data.
+ *
+ * @see java.lang.Object#toString()
  * @author himabindu.v
  *
  */
@@ -44,112 +45,13 @@ public class CiscoDnasPluginService {
     @Autowired
     ServletContext servletContext;
 
-    @Autowired
-    DnasCiscoPartnerLocationInfoServices dnaCiscoPartnerLocationInfoServices;
-
-    public static void saveCiscoDnasResponseInTextFile(final String response) {
-
-        try {
-            //logger.info("FileLength is:" + iDataLength);
-
-            StringBuilder directoryFilePath = new StringBuilder();
-            directoryFilePath.append("/home/CiscoDnas");
-            directoryFilePath.append(File.separator);
-
-            File directory = new File(directoryFilePath.toString());
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-            directoryFilePath.append(new Date().getTime() + ".txt");
-
-            try {
-                OutputStream osOutputStream = new FileOutputStream(directoryFilePath.toString());
-                osOutputStream.write(response.getBytes());
-                osOutputStream.close();
-            }
-            catch (IOException ex) {
-                //logger.error("exception occoured", ex);
-            }
-        }
-        catch (Exception ex) {
-
-        }
-    }
-
-    public Map<String, Object> checkLocations(final JSONObject locationResponse, final Long tblOrgId, final String partnerTenantId,
-            final String apiUrl, final String apiKey) throws ClientProtocolException, IOException, ParseException, Exception {
-        Map<String, Object> response = new HashMap<String, Object>();
-        String locationType = dnaCiscoPartnerLocationInfoServices.getLocationType(locationResponse);
-        String locationName = locationResponse.get("name").toString();
-        String locationId = locationResponse.get("locationId").toString();
-        logger.debug("locationResponse :" + locationResponse + "locationType:" + locationType);
-        if (StringUtils.isNotEmpty(locationType)) {
-            /* TblZone tblZone = null;*/
-            switch (locationType) {
-                case Constants.CMXZONE:
-                    logger.debug("Check CMX Zone by locationId  is exited from your local data base.");
-                    // if CMX Zone is not  existed.so we have to create zone based on location response.
-
-                    //create Floor
-                    return dnaCiscoPartnerLocationInfoServices.saveZoneBasedOnFloor(tblOrgId, locationId, apiUrl, apiKey, partnerTenantId);
-
-                case Constants.ZONE:
-                    logger.debug("Check CMX Zone by locationId  is exited from your local data base.");
-                    // if CMX Zone is not  existed.so we have to create zone based on location response.
-                    //create Floor
-                    return dnaCiscoPartnerLocationInfoServices.saveZoneBasedOnFloor(tblOrgId, locationId, apiUrl, apiKey, partnerTenantId);
-
-                case Constants.FLOOR:
-
-                    //create Floor
-                    dnaCiscoPartnerLocationInfoServices.saveFloorBasedOnBuilding(tblOrgId, locationId, apiUrl, apiKey, partnerTenantId);
-
-                    return response;
-
-                case Constants.BUILDING:
-                    // if building is not there.create building in your local database.
-                    dnaCiscoPartnerLocationInfoServices.saveBuildingBasedOnCampus(tblOrgId, locationId, apiUrl, apiKey, partnerTenantId);
-                case Constants.CAMPUS:
-
-                    // if campus is not there.create campus in your local database.
-                    dnaCiscoPartnerLocationInfoServices.saveCampusByLocationId(tblOrgId, locationId, apiUrl, apiKey, partnerTenantId);
-
-                default:
-                    logger.info("Level type was not getting from cisco dnas.");
-            }
-        }
-        return null;
-
-    }
-
-    public void checkMapInfo(final String mapId, final String url, final String apiKey, final String partnerTenantId, final Long orgId)
-            throws ClientProtocolException, IOException, Exception {
-        String mapResponse = dnaCiscoPartnerLocationInfoServices.getMapDetails(mapId, url, apiKey, partnerTenantId);
-
-        if (StringUtils.isNotBlank(mapResponse)) {
-            JSONParser parser = new JSONParser();
-            JSONObject responseObject = (JSONObject) parser.parse(mapResponse);
-            if (responseObject != null) {
-                logger.debug(" responseObject :" + responseObject);
-
-                logger.debug(" responseObject.get(\"imageWidth\").toString() : " + responseObject.get("imageWidth").toString()
-                        + " responseObject.get(\"imageHeight\").toString():" + responseObject.get("imageHeight").toString());
-                String strDimension = responseObject.get("dimension").toString();
-                JSONObject dimensionObj = (JSONObject) parser.parse(strDimension);
-                logger.info(" dimensionObj.get(\"width\").toString() :" + dimensionObj.get("width").toString()
-                        + " dimensionObj.get(\"length\").toString():" + dimensionObj.get("length").toString());
-
-                InputStream mapImageDetails = dnaCiscoPartnerLocationInfoServices.getMapImageDetails(mapId, url, apiKey, partnerTenantId);
-                logger.debug(" save mapImageDetails to your local server to retrive map in your application.");
-
-            }
-        }
-        else {
-            logger.info("From mapId,apiKey map image is not found");
-        }
-        //return tblMaps;
-    }
-
+    /**
+     * @param jsonStr
+     * @param activeTenantsMap
+     * @param apiUrl
+     * @param apiKey
+     * @return
+     */
     public String geDnasCiscoPluginResponse(final String jsonStr, final Map<String, Long> activeTenantsMap, final String apiUrl,
             final String apiKey) {
         ModelMap map = new ModelMap();
@@ -157,11 +59,9 @@ public class CiscoDnasPluginService {
             logger.debug("getting response from cisco fire house:" + jsonStr);
             JSONObject resultObj = prepareCiscoDnasJSONString(jsonStr, activeTenantsMap, apiUrl, apiKey);
             logger.debug("Prepared JSON format  : " + resultObj.toString());
-            String CISCODNASFIREHOUSE = "http://183.83.217.148:4020/alertListener.ashx";
 
             if (!resultObj.isEmpty()) {
-                DnasCiscoFireHouseListenerService.sendDataToAlertListener(CISCODNASFIREHOUSE, resultObj.toString());
-                //beconListenerService.sendDataToBeconListener(tblUrl.getUrl(), resultObj.toString());
+                //Here send process data to service, then save tag data in to local server.
                 return "Success";
             }
             else {
@@ -184,8 +84,12 @@ public class CiscoDnasPluginService {
         }
     }
 
+    /**
+     * @param jsonStr
+     * @param activeTenantsMap
+     * @return
+     */
     public JSONObject getDevicePresenceEventResponse(final String jsonStr, final Map<String, Long> activeTenantsMap) {
-        // logger.debug("jsonStr: " + jsonStr);
         JSONObject resultObj = new JSONObject();
         JSONParser parser = new JSONParser();
         JSONObject responseObject;
@@ -193,7 +97,6 @@ public class CiscoDnasPluginService {
             responseObject = (JSONObject) parser.parse(jsonStr);
             if (responseObject.containsKey("partnerTenantId")) {
                 String partnerTenantId = responseObject.get("partnerTenantId").toString();
-                //  logger.debug("partnerTenantId: " + partnerTenantId);
                 if (activeTenantsMap.containsKey(partnerTenantId)) {
                     Long orgId = activeTenantsMap.get(partnerTenantId);
                     if (responseObject.containsKey("devicePresence")) {
@@ -237,6 +140,14 @@ public class CiscoDnasPluginService {
         return resultObj;
     }
 
+    /**
+     * @param jsonStr
+     * @param activeTenantsMap
+     * @param eventType
+     * @param deviceEventType
+     * @return
+     * @throws ParseException
+     */
     public JSONObject getEntryEventResponse(final String jsonStr, final Map<String, Long> activeTenantsMap, final String eventType,
             final String deviceEventType) throws ParseException {
         JSONObject resultObj = new JSONObject();
@@ -293,6 +204,11 @@ public class CiscoDnasPluginService {
 
     }
 
+    /**
+     * @param jsonStr
+     * @param activeTenantsMap
+     * @return
+     */
     public JSONObject getUserPresenceEventResponse(final String jsonStr, final Map<String, Long> activeTenantsMap) {
 
         JSONObject resultObj = new JSONObject();
@@ -349,6 +265,21 @@ public class CiscoDnasPluginService {
         return resultObj;
     }
 
+    /**
+     * Here we sending the parameters like jsonStr,activeTenantsMap,apiUrl,apiKey
+     */
+
+    /**
+     * @param jsonStr
+     * @param activeTenantsMap
+     * @param apiUrl
+     * @param apiKey
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws ParseException
+     * @throws Exception
+     */
     public JSONObject prepareCiscoDnasJSONString(final String jsonStr, final Map<String, Long> activeTenantsMap, final String apiUrl,
             final String apiKey) throws ClientProtocolException, IOException, ParseException, Exception {
         JSONObject resultObj = new JSONObject();
@@ -356,6 +287,7 @@ public class CiscoDnasPluginService {
         JSONObject responseObject = (JSONObject) parser.parse(jsonStr);
         JSONArray result = new JSONArray();
 
+        logger.debug("responseObject: " + responseObject);
         if (responseObject.containsKey("deviceLocationUpdate")) {
             JSONObject jsonDataObj = (JSONObject) responseObject.get("deviceLocationUpdate");
             // logger.debug("jsonDataObj: " + jsonDataObj);
@@ -370,60 +302,8 @@ public class CiscoDnasPluginService {
                     for (Map.Entry<String, Long> entry : activeTenantsMap.entrySet()) {
                         if (entry.getKey().equals(partnerTenantId)) {
                             if (entry.getValue() != null) {
-                                /* TblSourceType tblSourceType = tblSourceTypeService.getBySourceName(Constants.DNA);
-                                if (tblSourceType != null) {*/
-                                // Get Matched tentantId from local dataabase.Present we are by passing
-                                /* TblThirdPartyApi tblThirdPartyApi = tblThirdPartyApiService.getBySourceIdOrgId(tblSourceType.getId(),
-                                        entry.getValue());*/
-
-                                if (jsonDataObj.containsKey("location")) {
-                                    String locationString = jsonDataObj.get("location").toString();
-
-                                    try {
-                                        JSONObject locationResponse = (JSONObject) parser.parse(locationString);
-
-                                        if (!locationResponse.isEmpty()) {
-                                            /*Runnable runnable = new Runnable() {*/
-                                            /*@Override
-                                            public void run() {
-                                            try {*/
-
-                                            String mapId = jsonDataObj.get("mapId").toString();
-
-                                            Map<String, Object> locations = checkLocations(locationResponse, entry.getValue(),
-                                                    partnerTenantId, apiUrl, apiKey);
-
-                                            //  logger.debug(" locations:" + locations);
-                                            if (locations != null) {
-
-                                                setDataToResponse(jsonDataObj, jsonObject, result, parser, entry.getValue());
-                                            }
-                                        }
-                                        else {
-                                            logger.info("Location details are not getting from response.");
-                                        }
-                                        /*catch (Exception ex) {
-                                        logger.error("Unknown exception occurred.");
-                                        logger.debug(ex);
-                                        }
-                                        }
-                                        };
-                                        Thread checkLocationsThread = new Thread(runnable);
-                                        checkLocationsThread.start();
-                                        }
-                                        else {
-                                        logger.info("Location details are not getting from response.");
-                                        }*/
-                                    }
-                                    catch (ParseException pex) {
-                                        logger.error("Unknown exception occurred.");
-                                        logger.debug(pex);
-                                    }
-                                }
-                                else {
-                                    logger.error("Location details are not getting from response.");
-                                }
-
+                                //Here we have to process the CiscoFireHose data and use data according to process which you required.
+                                setDataToResponse(jsonDataObj, jsonObject, result, parser, entry.getValue());
                             }
                             else {
                                 logger.error("This packet is not from valid tenantId");
@@ -454,9 +334,9 @@ public class CiscoDnasPluginService {
      * @param devicePresenceEventResponse
      */
     private void raiseAlert(final org.json.simple.JSONObject devicePresenceEventResponse) {
-        // TblUrls tblUrls = urlService.getByUrlCode(Constants.TRIGGER_EVENT);
-        String url = "http://192.168.15.252:9082/nview/event/triggerEvent";
-        //    logger.debug("devicePresenceEventResponse: " + devicePresenceEventResponse);
+        //Here we are referring URL from local server to raise the alerts.
+        String url = "";
+
         if (url != null) {
             HttpPost postRequest = new HttpPost(url);
             HttpClient client = HttpClientBuilder.create().build();
@@ -487,6 +367,14 @@ public class CiscoDnasPluginService {
         }
     }
 
+    /**
+     * @param jsonDataObj
+     * @param jsonObject
+     * @param result
+     * @param parser
+     * @param orgId
+     * @throws ParseException
+     */
     public void setDataToResponse(final JSONObject jsonDataObj, final JSONObject jsonObject, final JSONArray result,
             final JSONParser parser, final Long orgId) throws ParseException {
         logger.debug("Formated JsonObject Packet from cisco dnas." + jsonObject);
@@ -528,6 +416,16 @@ public class CiscoDnasPluginService {
         result.add(jsonObject);
     }
 
+    /**
+     * @param jsonDataObj
+     * @param jsonObject
+     * @param result
+     * @param strLevelId
+     * @param strMapId
+     * @param parser
+     * @param orgId
+     * @throws ParseException
+     */
     public void setDataToResponse(final JSONObject jsonDataObj, final JSONObject jsonObject, final JSONArray result,
             final String strLevelId, final String strMapId, final JSONParser parser, final Long orgId) throws ParseException {
         logger.debug("Formated JsonObject Packet from cisco dnas." + jsonObject);

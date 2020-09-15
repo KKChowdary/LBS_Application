@@ -31,7 +31,7 @@ public class RedisFeeder {
     }
 
     public void accept(final JSONObject eventData, final Map<String, Long> activeTenantsMap, final String apiUrl, final String apiKey) {
-        log.debug("Start executing the RedisFeder accept methos.");
+        log.debug("Start executing the RedisFeder accept method.");
         init();
         /*JSONObject json = new JSONObject();
         raiseAlert(json);*/
@@ -44,13 +44,14 @@ public class RedisFeeder {
                 macAddress = eventData.getJSONObject("deviceLocationUpdate").getJSONObject("device").getString("macAddress");
                 log.debug("published event to :: DEVICE_LOCATION_UPDATE::" + macAddress);
 
+                //Processing the cisco fire hose data to update device location on map.
                 ciscoDnasPluginService.geDnasCiscoPluginResponse(eventData.toString(), activeTenantsMap, apiUrl, apiKey);
                 break;
             case "DEVICE_ENTRY":
                 log.debug("Published the event to :: DEVICE_ENTRY::");
                 org.json.simple.JSONObject entryEventResponse;
                 try {
-
+                    //Processed fire hose data and raise the alert when new device was entered in location.
                     entryEventResponse = ciscoDnasPluginService.getEntryEventResponse(eventData.toString(), activeTenantsMap,
                             EventTypes.ENTRY.toString(), "deviceEntry");
 
@@ -69,7 +70,7 @@ public class RedisFeeder {
                 log.debug("Published the event to :: DEVICE_EXIT::");
                 org.json.simple.JSONObject deviceExityEventResponse;
                 try {
-
+                    //Processed fire hose data and raise the alert when device was exit in location.
                     deviceExityEventResponse = ciscoDnasPluginService.getEntryEventResponse(eventData.toString(), activeTenantsMap,
                             EventTypes.EXIT.toString(), "deviceExit");
                     if (deviceExityEventResponse.containsKey("tagMacId")) {
@@ -89,6 +90,7 @@ public class RedisFeeder {
             case "USER_PRESENCE":
                 log.debug("Published the event to :: USER_PRESENCE::");
 
+                //Processed fire hose data and raise the alert when new user presence in location.
                 org.json.simple.JSONObject userPresenceEventResponse = ciscoDnasPluginService
                         .getUserPresenceEventResponse(eventData.toString(), activeTenantsMap);
                 log.debug("Getting response from getUserPresenceEventResponse method: " + userPresenceEventResponse);
@@ -99,6 +101,8 @@ public class RedisFeeder {
                 break;
             case "DEVICE_PRESENCE":
                 log.debug("Published the event to :: DEVICE_PRESENCE::");
+
+                //Processed fire hose data and raise the alert when new device presence in location.
                 org.json.simple.JSONObject devicePresenceEventResponse = ciscoDnasPluginService
                         .getDevicePresenceEventResponse(eventData.toString(), activeTenantsMap);
                 log.debug("devicePresenceEventResponse: " + devicePresenceEventResponse);
@@ -110,7 +114,5 @@ public class RedisFeeder {
                 log.debug("Event type was not matched with any switch case.");
 
         }
-
     }
-
 }
